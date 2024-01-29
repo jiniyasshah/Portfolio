@@ -2,9 +2,10 @@ import React from 'react'
 import Navbar from './components/Navbar'
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 import { Home, Contact, About, Projects } from './pages'
+import Footer from './components/Footer'
 const App = () => {
   return (
-    <main className='bg-slate-300/20'>
+    <main className='bg-slate-300/20 h-[100vh]'>
       <Router>
         <Navbar />
         <Routes>
@@ -15,6 +16,7 @@ const App = () => {
 
 
         </Routes>
+        <Footer />
       </Router>
 
     </main>
