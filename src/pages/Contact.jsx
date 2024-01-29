@@ -3,24 +3,31 @@ import emailjs from '@emailjs/browser'
 import { useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import Fox from '../models/Fox';
-import Loader from "../components/Loader"
-
+import Loader from "../components/Loader";
+import useAlert from '../hooks/useAlert';
+import Alert from '../components/Alert';
 const Contact = () => {
     const [form, setForm] = useState({ name: '', email: '', message: '' })
     const [isLoading, setIsLoading] = useState(false);
+    const [currentAnimation, setCurrentAnimation] = useState('idle')
     const formRef = useRef(null);
+    const { alert, showAlert, hideAlert } = useAlert();
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value })
     }
 
     const handleFocus = () => {
-
+        setCurrentAnimation('walk')
 
     }
 
-    const handleBlur = () => { }
+
+    const handleBlur = () => {
+        setCurrentAnimation('idle')
+    }
 
     const handleSubmit = (e) => {
+        setCurrentAnimation('hit')
 
         e.preventDefault();
         setIsLoading(true);
@@ -38,16 +45,30 @@ const Contact = () => {
             },
             import.meta.env.VITE_APP_EMAILJS_PUBLIC_KEY
         ).then(() => {
+
+            showAlert({ text: 'Message sent successfully!', type: "success" })
+            setTimeout(() => {
+                hideAlert();
+                setCurrentAnimation('idle')
+                setForm({ name: '', email: '', message: '' })
+            }, [3000])
+
+
             setIsLoading(false)
-            setForm({ name: '', email: '', message: '' })
+
             //TODO: show success message
         }).catch((error) => {
+            showAlert({ text: "I didn't receive your message", type: 'danger' })
+            setCurrentAnimation('idle')
             setIsLoading(false)
             console.log(error)
         })
+
+
     }
     return (
         <section className='relative flex lg:flex-row flex-col max-container'>
+            {alert.show && <Alert {...alert} />}
             <div className="flex-1 min-w-[50%] flex flex-col">
 
                 <h1 className='head-text'>Get in Touch</h1>
@@ -116,7 +137,8 @@ const Contact = () => {
                         <Fox
                             position={[0.5, 0.35, 0]}
                             rotation={[12.6, -0.6, 0]}
-                            scale={[0.5, 0.5, 0.5]} />
+                            scale={[0.5, 0.5, 0.5]}
+                            currentAnimation={currentAnimation} />
 
                     </Suspense>
 
